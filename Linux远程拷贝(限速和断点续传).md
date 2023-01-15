@@ -1,7 +1,8 @@
  * 来源：https://www.linuxidc.com/Linux/2016-05/131116.htm
-# scp 远程拷贝
-## scp 拷贝本地文件filename  到远程机器 192.168.188.188 服务器的/data/tmp目录下 
-```   scp -P 61204 -l 40000 filename username@192.168.188.188:/data/tmp/  
+## 1. scp 远程拷贝
+### scp 拷贝本地文件filename  到远程机器 192.168.188.188 服务器的/data/tmp目录下 
+```   
+  scp -P 61204 -l 40000 filename username@192.168.188.188:/data/tmp/  
 
  -P port   
              Specifies the port to connect to on the remote host.  Note that this option is written with a capital ‘P’, because -p is already reserved
@@ -14,9 +15,10 @@
 ```
 * 注：scp不支持断点续传
 
-# rsync + ssh 断点续传
-## rsync同步本地文件 filename  到远程机器 192.168.188.188 服务器的/data/tmp目录下
-``` rsync -avzP -e 'ssh -p 61204' --bwlimit=5000 filename username@10.20.90.101:/data/tmp/ >> scp_to_101.log
+## 2. rsync + ssh 断点续传
+### rsync同步本地文件 filename  到远程机器 192.168.188.188 服务器的/data/tmp目录下
+``` 
+  rsync -avzP -e 'ssh -p 61204' --bwlimit=5000 filename username@10.20.90.101:/data/tmp/ >> scp_to_101.log
 -a：以archive模式操作，复制目录、符号连接，等价于 -rlptgoD 。
 -v：详细提示 
 -z：压缩
@@ -31,4 +33,4 @@
 ```
 * 上例：使用rsync传输本地文件filename到192.168.188.188的/data/tmp目录下  使用压缩归档传输、限速5MB、支持断点续传 使用ssh协议 
 
-# 详情 可以参考 man scp 和man rsync 手册
+### 详情 可以参考 man scp 和man rsync 手册
