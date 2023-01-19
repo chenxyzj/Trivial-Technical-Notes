@@ -1,0 +1,9 @@
+1. 简单的方法crontab
+   sudo crontab -e
+   在打开的编辑器最后一行回车新建空行，输入： @reboot  /home/xxx/myRebootShellScript.sh&
+   保存，退出编辑器。
+   查看计划任务：
+   sudo crontab -l
+   
+ 2. （只能登录后执行，并且每次登录都会执行一次）在.profile中的添加一行： /home/xxx/myRebootShellScript.sh& 
+ 3. （带有Gnome）使用启动应用程序。   
