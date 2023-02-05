@@ -1,0 +1,63 @@
+著作权归作者所有。
+商业转载请联系作者获得授权，非商业转载请注明出处。
+作者：Late Winter
+链接：http://www.itca.cc/ProxmoxVE%E8%99%9A%E6%8B%9F%E5%8C%96/81.html
+来源：http://www.itca.cc/
+
+ProxmoxVE(PVE) 7.0配置国内软件源并删除订阅弹窗
+Jul 14,2021 in ProxmoxVE虚拟化 lang 繁 read (1120)
+因PVE7.0更换了Debian11作为内核，软件源管理方式也发生了变更，故原软件源配置方法已失效。
+默认是企业订阅版，如果不做修改，在使用 pveceph init 进行 ceph 初始化安装的时候会将整个环境破坏，切记！
+
+登陆各节点Shell控制台
+【重要】将/etc/apt/sources.list.d/pve-enterprise.list 文件内的唯一一条记录注释掉：
+
+echo "#deb https://enterprise.proxmox.com/debian/pve bullseye pve-enterprise" > /etc/apt/sources.list.d/pve-enterprise.list
+mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak   # 重命名也可【推荐】
+rm -rf /etc/apt/sources.list.d/pve-enterprise.list   # 删除也可
+Proxmox软件源更换
+南大NJU源（选一个）：
+
+echo "deb https://mirrors.nju.edu.cn/proxmox/debian bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-no-subscription.list
+apt update && apt dist-upgrade     #更新软件，可不执行
+中科大源（选一个）：
+
+echo "deb https://mirrors.ustc.edu.cn/proxmox/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-no-subscription.list
+apt update && apt dist-upgrade     #更新软件，可不执行
+其他可选源：
+
+# 清华Tuna源
+echo "deb https://mirrors.tuna.tsinghua.edu.cn/proxmox/debian bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-no-subscription.list
+Debian系统源更换
+阿里Debian源（选一个）：
+
+sed -i.bak "s#ftp.debian.org/debian#mirrors.aliyun.com/debian#g" /etc/apt/sources.list     #阿里Debian源
+sed -i "s#security.debian.org#mirrors.aliyun.com/debian-security#g" /etc/apt/sources.list     #阿里Debian源
+apt update && apt dist-upgrade     #更新软件，可不执行
+华为Debian源（选一个）：
+
+sed -i.bak "s#http://ftp.debian.org#https://repo.huaweicloud.com#g" /etc/apt/sources.list     #华为Debian源
+sed -i "s#http://security.debian.org#https://repo.huaweicloud.com/debian-security#g" /etc/apt/sources.list     #华为Debian源
+apt-get install apt-transport-https ca-certificates && apt update && apt dist-upgrade     #更新软件，可不执行
+163-Debian源（选一个）：
+
+sed -i.bak "s#ftp.debian.org/debian#mirrors.163.com/debian#g" /etc/apt/sources.list     #163Debian源
+sed -i "s#security.debian.org#mirrors.163.com/debian-security#g" /etc/apt/sources.list     #163Debian源
+apt update && apt dist-upgrade     #更新软件，可不执行
+LXC仓库源更换
+南大NJU源（选一个）：
+
+sed -i.bak "s#http://download.proxmox.com/images#https://mirrors.nju.edu.cn/proxmox/images#g" /usr/share/perl5/PVE/APLInfo.pm  
+wget -O /var/lib/pve-manager/apl-info/mirrors.nju.edu.cn https://mirrors.nju.edu.cn/proxmox/images/aplinfo-pve-7.dat
+systemctl restart pvedaemon
+中科大源（选一个）：
+
+sed -i.bak "s#http://download.proxmox.com/images#https://mirrors.ustc.edu.cn/proxmox/images#g" /usr/share/perl5/PVE/APLInfo.pm  
+wget -O /var/lib/pve-manager/apl-info/mirrors.ustc.edu.cn https://mirrors.ustc.edu.cn/proxmox/images/aplinfo-pve-7.dat
+systemctl restart pvedaemon
+CEPH源更换
+echo "deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-pacific bullseye main" > /etc/apt/sources.list.d/ceph.list     #中科大源
+sed -i.bak "s#http://download.proxmox.com/debian#https://mirrors.ustc.edu.cn/proxmox/debian#g" /usr/share/perl5/PVE/CLI/pveceph.pm     #中科大源
+删除订阅弹窗
+sed -Ezi.bak "s/(Ext.Msg.show\(\{\s+title: gettext\('No valid sub)/void\(\{ \/\/\1/g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js && systemctl restart pveproxy.service
+# 执行完成后，浏览器Ctrl+F5强制刷新缓存
