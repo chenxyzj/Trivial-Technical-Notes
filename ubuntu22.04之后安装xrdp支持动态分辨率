@@ -1,0 +1,13 @@
+ubuntu22.04之后安装xrdp支持动态分辨率：
+1. sudo apt install xrdp
+2. sudo nano /etc/xrdp/startwm.sh
+将下面这两行放到脚本前面：
+export GNOME_SHELL_SESSION_MODE=ubuntu
+export XDG_CURRENT_DESKTOP=ubuntu:GNOME
+保存退出。
+
+3. sudo adduser xrdp ssl-cert
+4. 重启不要本地登录，然后可以远程xrdp连接登录。
+
+参考：
+https://askubuntu.com/questions/1404245/remote-desktop-from-windows-onto-ubuntu-22-04-takes-me-to-a-xrdp-login-then-a-bl
